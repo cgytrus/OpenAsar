@@ -1,6 +1,6 @@
 const { app, session } = require('electron');
 const { readFileSync } = require('fs');
-const { join } = require('path');
+const { join, resolve } = require('path');
 
 if (!settings.get('enableHardwareAcceleration', true)) app.disableHardwareAcceleration();
 process.env.PULSE_LATENCY_MSEC = process.env.PULSE_LATENCY_MSEC ?? 30;
@@ -48,28 +48,30 @@ const startCore = () => {
     });
   });
 
-  desktopCore = require('./utils/requireNative')('discord_desktop_core');
+  (session.defaultSession.loadExtension(resolve('./react-devtools'))).finally(() => {
+    desktopCore = require('./utils/requireNative')('discord_desktop_core');
 
-  desktopCore.startup({
-    splashScreen: splash,
-    moduleUpdater,
-    buildInfo,
-    Constants,
-    updater,
-    autoStart,
-
-    // Just requires
-    appSettings: require('./appSettings'),
-    paths: require('./paths'),
-
-    // Stubs
-    GPUSettings: {
-      replace: () => {}
-    },
-    crashReporterSetup: {
-      isInitialized: () => true,
-      metadata: {}
-    }
+    desktopCore.startup({
+      splashScreen: splash,
+      moduleUpdater,
+      buildInfo,
+      Constants,
+      updater,
+      autoStart,
+  
+      // Just requires
+      appSettings: require('./appSettings'),
+      paths: require('./paths'),
+  
+      // Stubs
+      GPUSettings: {
+        replace: () => {}
+      },
+      crashReporterSetup: {
+        isInitialized: () => true,
+        metadata: {}
+      }
+    });
   });
 };
 
