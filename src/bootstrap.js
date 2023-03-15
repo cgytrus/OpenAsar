@@ -48,7 +48,7 @@ const startCore = () => {
     });
   });
 
-  (session.defaultSession.loadExtension(resolve('./react-devtools'))).finally(() => {
+  (session.defaultSession.loadExtension(resolve('../react-devtools'))).finally(() => {
     desktopCore = require('./utils/requireNative')('discord_desktop_core');
 
     desktopCore.startup({
